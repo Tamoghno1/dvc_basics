@@ -22,11 +22,12 @@ stages:
   train:
     cmd: python src/train.py data/features model.pkl
     deps:
-    - src/train.py
     - data/features
+    - src/train.py
     params:
-    - train.seed
+    - train.min_split
     - train.n_est
+    - train.seed
     outs:
     - model.pkl
   evaluate:
@@ -44,3 +45,21 @@ stages:
     metrics:
     - eval/live/metrics.json:
         cache: false
+plots:
+  - ROC:
+      x: fpr
+      y:
+        eval/live/plots/sklearn/roc/train.json: tpr
+        eval/live/plots/sklearn/roc/test.json: tpr
+  - Confusion-Matrix:
+      template: confusion
+      x: actual
+      y:
+        eval/live/plots/sklearn/cm/train.json: predicted
+        eval/live/plots/sklearn/cm/test.json: predicted
+  - Precision-Recall:
+      x: recall
+      y:
+        eval/prc/train.json: precision
+        eval/prc/test.json: precision
+  - eval/importance.png
